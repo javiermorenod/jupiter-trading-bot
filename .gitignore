@@ -1,0 +1,29 @@
+# Python cache
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+.venv/
+venv/
+env/
+
+# IDE / Editor settings
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Database / local files
+*.sqlite3
+*.db
+
+# Environment variables
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# System files
+.DS_Store
+Thumbs.db
