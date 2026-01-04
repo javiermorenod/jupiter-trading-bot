@@ -1,0 +1,5 @@
+python-binance
+mysql-connector-python
+pandas
+numpy
+requests
