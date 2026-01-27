@@ -27,3 +27,6 @@ env/
 # System files
 .DS_Store
 Thumbs.db
+
+# Testing file
+test.py

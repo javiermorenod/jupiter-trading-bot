@@ -1,6 +1,6 @@
 from settings.connect import binance_client
 from settings.log import start_logging, log_message
-from settings.strategies.ananke import execute_ananke
+from live_ananke import execute_ananke
 import time
 
 

@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from settings import indicators
-from settings import bt_frame
+from settings import backtest
 from settings.connect import binance_client, sqlalchemy_create_engine
 from settings.log import start_logging
 
@@ -110,18 +110,18 @@ def test_on_btc(initial_balance: float, balance: float, positions: dict, trade_h
         for i in range(len(df)):
             kline = df.iloc[i:i+1].copy()
             if not kline['signal'].empty and kline['signal'].iloc[0] in ['BUY', 'SELL']:
-                balance, positions, trade_history = bt_frame.open_position(
+                balance, positions, trade_history = backtest.open_position(
                     kline, balance, positions, trade_history, risk_per_trade, logger)
-                balance, positions, trade_history = bt_frame.manage_positions(
+                balance, positions, trade_history = backtest.manage_positions(
                     kline, balance, positions, trade_history, logger)
 
         # Final liquidation
         if not df.empty:
-            balance, positions, trade_history = bt_frame.close_all_positions(
+            balance, positions, trade_history = backtest.close_all_positions(
                 {symbol: df}, balance, positions, trade_history, logger)
 
         # Calculate performance
-        metrics = bt_frame.calculate_metrics(
+        metrics = backtest.calculate_metrics(
             initial_balance, balance, trade_history, True, logger)
 
     except Exception as e:
@@ -176,18 +176,18 @@ def test_on_all_pairs_independently(initial_balance: float, risk_per_trade: str)
             for i in range(len(df)):
                 kline = df.iloc[i:i+1].copy()
                 if not kline['signal'].empty and kline['signal'].iloc[0] in ['BUY', 'SELL']:
-                    balance, positions, trade_history = bt_frame.open_position(
+                    balance, positions, trade_history = backtest.open_position(
                         kline, balance, positions, trade_history, risk_per_trade, logger)
-                    balance, positions, trade_history = bt_frame.manage_positions(
+                    balance, positions, trade_history = backtest.manage_positions(
                         kline, balance, positions, trade_history, logger)
 
             # Final liquidation
             if not df.empty:
-                balance, positions, trade_history = bt_frame.close_all_positions(
+                balance, positions, trade_history = backtest.close_all_positions(
                     {symbol: df}, balance, positions, trade_history, logger)
 
             # Calculate performance
-            metrics = bt_frame.calculate_metrics(
+            metrics = backtest.calculate_metrics(
                 initial_balance, balance, trade_history, True, logger)
 
     except Exception as e:
@@ -247,7 +247,7 @@ def test_ananke(initial_balance: float, balance: float, positions: dict, trade_h
             dfs[symbol] = df
 
         # Get all unique timestamps
-        timeline = bt_frame.create_unified_timeline(dfs)
+        timeline = backtest.create_unified_timeline(dfs)
 
         logger.info("Starting portfolio backtest with %d symbols and %d timestamps",
                     len(dfs), len(timeline))
@@ -261,14 +261,14 @@ def test_ananke(initial_balance: float, balance: float, positions: dict, trade_h
                 if symbol in dfs and timestamp in dfs[symbol].index:
                     kline = dfs[symbol].loc[[timestamp]]
                     if kline['signal'].iloc[0] in ['BUY', 'SELL'] and symbol not in positions:
-                        balance, positions, trade_history = bt_frame.open_position(
+                        balance, positions, trade_history = backtest.open_position(
                             kline, balance, positions, trade_history, risk_per_trade, logger)
 
             # Manage existing positions
             for symbol in list(positions.keys()):
                 if symbol in dfs and timestamp in dfs[symbol].index:
                     kline = dfs[symbol].loc[[timestamp]]
-                    balance, positions, trade_history = bt_frame.manage_positions(
+                    balance, positions, trade_history = backtest.manage_positions(
                         kline, balance, positions, trade_history, logger)
 
             # Progress logging
@@ -276,11 +276,11 @@ def test_ananke(initial_balance: float, balance: float, positions: dict, trade_h
                 logger.info("Processed %d/%d timestamps", i, len(timeline))
 
         # Final liquidation
-        balance, positions, trade_history = bt_frame.close_all_positions(
+        balance, positions, trade_history = backtest.close_all_positions(
             dfs, balance, positions, trade_history, logger)
 
         # Calculate performance
-        metrics = bt_frame.calculate_metrics(
+        metrics = backtest.calculate_metrics(
             initial_balance, balance, trade_history, True, logger)
 
     except Exception as e:
