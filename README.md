@@ -1,6 +1,6 @@
 # Jupiter Trading Bot
 
-**Sistema de trading automatizado con gestión de riesgo y backtesting.**
+**Automated Trading System with Risk Management & Backtesting.**
 
 This repository contains a Python-based trading bot designed for automated trading on **Binance**. It features a live execution engine using Binance API keys and a robust backtesting module that utilizes a **MySQL** database for historical data management.
 
